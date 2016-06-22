@@ -1,7 +1,7 @@
 # README #
 
 
-### What is this repository for? ###
+### Comet IDE
 
 * Projeto de editor de texto, com as funcionalidades de editar varios arquivos simultaneamente, abrir arquivo do disco, salvar arquivo do disco e executar arquivo.
 * Projeto versao 1.0

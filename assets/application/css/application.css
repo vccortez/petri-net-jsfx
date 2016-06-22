@@ -1,0 +1,27 @@
+.text-field {
+  -fx-background-image: url('../icon/searchIcon16.png');
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: right center;
+}
+
+.text-input:focused {
+    -fx-prompt-text-fill: transparent;
+    -fx-background-image: none;
+}
+
+.text-area{
+	-fx-highlight-fill: lightgray;
+	-fx-highlight-text-fill: firebrick;
+}
+
+.text-area.error{
+  -fx-background-color: red;
+}
+
+.button { 
+    -fx-background-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: lightgray;
+}

@@ -1,0 +1,5 @@
+pessoa =  { ["nome"] = "Fulano" , idade = 12, obs = null }
+
+print ("Nome: " + pessoa["nome"])
+print ("Idade: " + pessoa.idade);
+print ("Obs:" + pessoa.obs)

@@ -1,0 +1,12 @@
+function max (n, m)
+  if n > m then
+    return n
+  else 
+    return m
+  end
+end
+
+a = io.read('*number')
+b = io.read('*number')
+
+print ("Max:".. max(a,b))

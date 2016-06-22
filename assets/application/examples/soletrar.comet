@@ -1,0 +1,16 @@
+function soletrar(n)
+  for letra in nome do 
+    print(letra);
+  end
+end
+
+repeat
+  nome = io.read('*string')
+
+  if nome.length == 0 then
+    return;
+  else
+    soletrar(nome);
+  end
+
+until (true)

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.web.WebView?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#onKeyTyped" prefHeight="600.0" prefWidth="900.0" vgap="18.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="128.0" minHeight="0.0" percentHeight="-0.0" prefHeight="32.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="678.0" minHeight="10.0" percentHeight="100.0" prefHeight="580.0" valignment="CENTER" />
+      <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" valignment="CENTER" />
+  </rowConstraints>
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#newFile" text="New" />
+              <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#focusFind" text="Find Text" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#showHelp" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+
+      <ToolBar prefHeight="58.0" prefWidth="800.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+        <items>
+          <Button mnemonicParsing="false" onAction="#newFile" prefHeight="23.0" prefWidth="23.0">
+			<tooltip>
+		        <Tooltip text="New" />
+		    </tooltip>
+			<graphic>
+		        <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+		          <image>
+					<Image url="@icon/newFileIcon26.png" />
+		          </image>
+		        </ImageView>
+	      	</graphic>
+		</Button>
+		         <Button mnemonicParsing="false" onAction="#openFile" prefHeight="23.0" prefWidth="23.0">
+			<tooltip>
+		        <Tooltip text="Open" />
+		    </tooltip>
+			<graphic>
+		        <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+		          <image>
+					<Image url="@icon/folderIcon26.png" />
+		          </image>
+		        </ImageView>
+	      	</graphic>
+		</Button>
+			<Button mnemonicParsing="false" onAction="#saveFile" prefHeight="23.0" prefWidth="23.0">
+				<tooltip>
+					<Tooltip text="Save" />
+			    </tooltip>
+               <graphic>
+                  <ImageView fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+						<Image url="@icon/saveIcon26.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+            <Button mnemonicParsing="false" onAction="#runLexFile" prefHeight="23.0" prefWidth="23.0">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icon/runLexIcon24.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Run Analyse Lex " />
+               </tooltip>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#runFile" prefHeight="23.0" prefWidth="23.0">
+				<tooltip>
+					<Tooltip text="Run" />
+			    </tooltip>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+						<Image url="@icon/runIcon26.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Pane HBox.hgrow="ALWAYS" />
+            <TextField fx:id="tfFind" onKeyReleased="#findText" promptText="Find" />
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.6322033898305085" orientation="VERTICAL" prefHeight="513.0" prefWidth="771.0" GridPane.rowIndex="3">
+        <items>
+            <TabPane fx:id="tpEditor" prefHeight="359.0" prefWidth="898.0" tabClosingPolicy="ALL_TABS">
+               <tabs>
+                  <Tab text="United">
+					<graphic>
+						<ImageView fitHeight="15" fitWidth="15">
+							<image>
+		                        <Image url="@icon/documentIcon26.png" />
+							</image>
+						</ImageView>
+					</graphic>
+                     <content>
+                        <TextArea prefHeight="200.0" prefWidth="200.0">
+                           <font>
+                              <Font name="Bitstream Vera Sans Mono Bold" size="12.0" />
+                           </font>
+                        </TextArea>
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+            <TabPane fx:id="tpOutput" prefHeight="77.0" prefWidth="774.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab closable="false" text="Console">
+                	<graphic>
+						<ImageView fitHeight="15" fitWidth="15">
+							<image>
+		                        <Image url="@icon/monitorIcon26.png" />
+							</image>
+						</ImageView>
+					</graphic>
+                     <content>
+                     	<WebView fx:id="browser" prefHeight="122.0" prefWidth="892.0" />
+<!--                         <TextArea editable="false" prefHeight="122.0" prefWidth="892.0" /> -->
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+        </items>
+      </SplitPane>
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4" />
+   </children>
+   <padding>
+      <Insets top="15.0" />
+   </padding>
+</GridPane>

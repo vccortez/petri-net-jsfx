@@ -1,0 +1,15 @@
+function isPrime (n)
+  if n % 2 == 0 then 
+    return false
+  else
+    return true
+  end
+end
+
+repeat
+  number = io.read('*number')
+  if isPrime(number) then
+    print('Encontrou numero primo. Bye!')
+    return
+  end
+until (true)

@@ -1,11 +1,11 @@
 package operation;
 
-import model.RedePetri;
+import model.PetriNet;
 
 public class OperationX {
 
-	public String executa(RedePetri rp) {
-		return "Nothing";
+	public String executa(PetriNet pn) {
+		return pn.toString();
 	}
 
 }

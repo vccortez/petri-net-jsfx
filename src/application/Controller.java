@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -24,6 +27,8 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import model.PetriNet;
+import operation.OperationX;
 
 public class Controller {
 
@@ -35,9 +40,12 @@ public class Controller {
 	private TextField tfFind;
 	@FXML
 	private WebView browser = new WebView();
-	private int initial = 0;
+	@FXML
+	private TextArea textOutput;
 
+	private int initial = 0;
 	private HashMap<Tab, File> openFiles = new HashMap<>();
+	private Gson gson;
 
 	@FXML
 	private void newFile() {
@@ -88,24 +96,16 @@ public class Controller {
 	private void runFile() {
 		WebEngine engine = browser.getEngine();
 		engine.load(getSourceCode(getSelectedTab()));
-
-		// Parse parse = new Parse(getSourceCode(getSelectedTab()));
-		// setOuputText(parse.parseExpression());
 	}
 
 	@FXML
 	private void runLexFile() {
-		// Lexer lex = new Lexer(new
-		// StringReader(getSourceCode(getSelectedTab())));
+		PetriNet petriNet = getPetriNet();
 
-		StringBuffer buffer = new StringBuffer();
-		// EnumToken token;
-		// do {
-		// token = lex.scan().token;
-		// buffer.append(token).append("\n");
-		// } while (!token.equals(EnumToken.EOF));
-
-		setOuputText(buffer.toString());
+		if (petriNet != null) {
+			String result = new OperationX().executa(petriNet);
+			setOuputText(result.toString());
+		}
 	}
 
 	@FXML
@@ -260,6 +260,7 @@ public class Controller {
 
 	private File persistedFile(Tab tab) {
 		// TODO HasMap.get()
+		// return openFiles.get(tab);
 		for (Map.Entry<Tab, File> entry : openFiles.entrySet()) {
 			if (entry.getKey().equals(tab)) {
 				return entry.getValue();
@@ -274,11 +275,32 @@ public class Controller {
 
 	private void closeTab(Tab tab) {
 		// TODO remove openFiles
+		// openFiles.remove(tab);
 		tpEditor.getTabs().remove(tab);
 	}
 
 	private void setOuputText(String text) {
-		Tab tabOuput = tpOutput.getSelectionModel().getSelectedItem();
-		setSourceCode(tabOuput, text);
+		// Tab tabOuput = tpOutput.getSelectionModel().getSelectedItem();
+		// setSourceCode(tabOuput, text);
+		textOutput.setText(text);
+	}
+
+	public Gson getGson() {
+		if (gson == null)
+			gson = new Gson();
+		return gson;
+	}
+
+	public PetriNet getPetriNet() {
+		String sourceCode = getSourceCode(getSelectedTab());
+		PetriNet petriNet = null;
+		try {
+			petriNet = getGson().fromJson(sourceCode, PetriNet.class);
+		} catch (JsonSyntaxException e) {
+			setOuputText(e.getMessage().replaceAll("(\\w+(\\.|:)|\\$\\.null)", ""));
+			e.printStackTrace();
+		}
+		return petriNet;
+
 	}
 }

@@ -24,7 +24,7 @@ public class Entry extends Application {
 		WebView webview = new WebView();
 		WebEngine engine = webview.getEngine();
 
-		String uri = getClass().getResource("/html/index.html").toExternalForm();
+		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
 		engine.load(uri);
 
 		JSObject window = (JSObject) engine.executeScript("window");
@@ -38,7 +38,7 @@ public class Entry extends Application {
 
 	public class Bridge {
 		public String loadJSON() {
-			InputStream in = getClass().getResourceAsStream("/html/test.json");
+			InputStream in = getClass().getResourceAsStream("/javascript/test.json");
 
 			BufferedInputStream bin = new BufferedInputStream(in);
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();

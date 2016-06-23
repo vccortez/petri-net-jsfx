@@ -4,7 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+import org.w3c.dom.Document;
+
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -24,11 +28,16 @@ public class Entry extends Application {
 		WebView webview = new WebView();
 		WebEngine engine = webview.getEngine();
 
-		String uri = getClass().getResource("/html/index.html").toExternalForm();
+		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
 		engine.load(uri);
 
-		JSObject window = (JSObject) engine.executeScript("window");
-		window.setMember("java", new Bridge());
+		engine.documentProperty().addListener(new ChangeListener<Document>() {
+			@Override
+			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
+				JSObject window = (JSObject) engine.executeScript("window");
+				window.setMember("java", new Bridge());
+			}
+		});
 
 		Scene scene = new Scene(webview);
 
@@ -38,7 +47,7 @@ public class Entry extends Application {
 
 	public class Bridge {
 		public String loadJSON() {
-			InputStream in = getClass().getResourceAsStream("/html/test.json");
+			InputStream in = getClass().getResourceAsStream("/javascript/test.json");
 
 			BufferedInputStream bin = new BufferedInputStream(in);
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();
@@ -58,6 +67,10 @@ public class Entry extends Application {
 			}
 
 			return json;
+		}
+
+		public void log(String message) {
+			System.out.println(message);
 		}
 	}
 }

@@ -82,29 +82,17 @@
                </graphic>
             </Button>
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
-            <Button mnemonicParsing="false" onAction="#runLexFile" prefHeight="23.0" prefWidth="23.0">
+            <Button mnemonicParsing="false" onAction="#visualizeNetPetri" prefHeight="23.0" prefWidth="23.0">
                <graphic>
                   <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@icon/runLexIcon24.png" />
+                        <Image url="@icon/runIcon26.png" />
                      </image>
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Run Analyse Lex " />
+                  <Tooltip text="Visualizar Rede de Petri" />
                </tooltip>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#runFile" prefHeight="23.0" prefWidth="23.0">
-				<tooltip>
-					<Tooltip text="Run" />
-			    </tooltip>
-               <graphic>
-                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-						<Image url="@icon/runIcon26.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
             </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <TextField fx:id="tfFind" onKeyReleased="#findText" promptText="Find" />

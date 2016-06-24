@@ -1,10 +1,8 @@
 package application;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -14,6 +12,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import javafx.beans.value.ChangeListener;
@@ -52,7 +51,6 @@ public class Controller {
 
 	private int initial = 0;
 	private HashMap<Tab, File> openFiles = new HashMap<>();
-	private Gson gson;
 
 	@FXML
 	private void newFile() {
@@ -101,56 +99,13 @@ public class Controller {
 	}
 
 	@FXML
-	private void runFile() {
-		WebEngine engine = browser.getEngine();
+	private void visualizeNetPetri() {
+		PetriNet net = getPetriNet();
+		Bridge bridge = new Bridge();
+		if (net != null)
+			bridge.value = new Gson().toJson(net);
 
-		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
-		engine.load(uri);
-
-		engine.documentProperty().addListener(new ChangeListener<Document>() {
-			@Override
-			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
-				PetriNet net = getPetriNet();
-				String json = getGson().toJson(net);
-
-				JSObject window = (JSObject) engine.executeScript("window");
-				window.setMember("java", new Bridge(json));
-			}
-		});
-	}
-
-	@FXML
-	private void runLexFile() {
-		WebEngine engine = browser.getEngine();
-		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
-		engine.load(uri);
-
-		engine.documentProperty().addListener(new ChangeListener<Document>() {
-			@Override
-			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
-				InputStream in = getClass().getResourceAsStream("/javascript/test.json");
-
-				BufferedInputStream bin = new BufferedInputStream(in);
-				ByteArrayOutputStream buf = new ByteArrayOutputStream();
-				String json = null;
-
-				try {
-					int res = bin.read();
-					while (res != -1) {
-						byte b = (byte) res;
-						buf.write(b);
-						res = bin.read();
-					}
-
-					json = buf.toString("UTF-8");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				JSObject window = (JSObject) engine.executeScript("window");
-				window.setMember("java", new Bridge(json));
-			}
-		});
+		loadPage(bridge);
 	}
 
 	@FXML
@@ -215,10 +170,10 @@ public class Controller {
 				break;
 			}
 		} else if (event.getCode() == KeyCode.F8) {
-			runLexFile();
-		} else if (event.getCode() == KeyCode.F9) {
-			runFile();
+			visualizeNetPetri();
 		}
+		// TODO adicionar outros metodos
+		// runFile();
 	}
 
 	private Tab newTab(String name) {
@@ -305,32 +260,48 @@ public class Controller {
 		textOutput.setText(text);
 	}
 
-	public Gson getGson() {
-		if (gson == null)
-			gson = new Gson();
-		return gson;
+	private void loadPage(Bridge bridge) {
+		WebEngine engine = browser.getEngine();
+		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
+		engine.load(uri);
+
+		engine.documentProperty().addListener(new ChangeListener<Document>() {
+			@Override
+			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
+				JSObject window = (JSObject) engine.executeScript("window");
+				window.setMember("java", bridge);
+			}
+		});
 	}
 
-	public PetriNet getPetriNet() {
+	private PetriNet getPetriNet() {
+		setOuputText(null);
 		String sourceCode = getSourceCode(getSelectedTab());
+		if (sourceCode == null || sourceCode.isEmpty()) {
+			setOuputText("É necessario informar o json da Rede de Petri.");
+			return null;
+		}
 		PetriNet petriNet = null;
 		try {
-			petriNet = getGson().fromJson(sourceCode, PetriNet.class);
+			petriNet = new Gson().fromJson(sourceCode, PetriNet.class);
+			if (petriNet != null && petriNet.getPlaces() == null)
+				setOuputText("Não foi possivel converter o json em uma Rede de Petri.");
 		} catch (JsonSyntaxException e) {
 			setOuputText(e.getMessage().replaceAll("(\\w+(\\.|:)|\\$\\.null)", ""));
 			e.printStackTrace();
 		}
+
 		return petriNet;
 	}
 
 	public class Bridge {
 		private String value;
 
-		public Bridge(String value) {
-			this.value = value;
-		}
-
 		public String loadJSON() {
+			if (value == null) {
+				Gson gson = new GsonBuilder().serializeNulls().create();
+				value = gson.toJson(new PetriNet());
+			}
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();
 			try {
 				buf.write(value.getBytes());

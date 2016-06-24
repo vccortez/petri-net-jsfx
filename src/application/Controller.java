@@ -193,7 +193,7 @@ public class Controller {
 	}
 
 	private Tab newTab() {
-		return newTab("United");
+		return newTab("Untitled");
 	}
 
 	private Tab getSelectedTab() {
@@ -225,10 +225,10 @@ public class Controller {
 
 	private FileChooser dialogChooseFile(String title) {
 		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Comets files (*.comet)", "*.comet");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
 		fileChooser.getExtensionFilters().add(extFilter);
 		fileChooser.setSelectedExtensionFilter(extFilter);
-		fileChooser.setInitialFileName(getSelectedTab().getText() + ".comet");
+		fileChooser.setInitialFileName(getSelectedTab().getText() + ".json");
 		fileChooser.setTitle(title);
 		return fileChooser;
 	}

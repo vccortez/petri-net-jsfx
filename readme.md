@@ -16,3 +16,8 @@
 ### Como executar
 * Importar projeto para workspace do eclipse
 * Executar projeto no eclipse
+
+### Como criar uma operação
+* Criar uma classe java dentro do pacote 'operation'
+* A classe deve ter um construtor que recebe um objeto PetriNet e se necessario um outro parametro dependendo do algoritmo.
+* A classe deve ter um metodo, que sera chamado pelo Controller, que contera o algoritmo e retorna uma string.

@@ -205,6 +205,14 @@ public class Controller {
 	}
 
 	private String getSourceCode(Tab tab) {
+		/**
+		 * FIXME:
+		 * quando todas as abas são fechadas, esse método levanta uma exceção.
+		 * por enquanto, retornar string vazia desvia o erro.
+		 */
+		if (tab == null) { 
+			return "";
+		}
 		return ((TextArea) tab.getContent()).getText();
 	}
 

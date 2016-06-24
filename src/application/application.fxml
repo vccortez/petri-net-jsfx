@@ -15,10 +15,10 @@
   </columnConstraints>
   <rowConstraints>
     <RowConstraints maxHeight="128.0" minHeight="0.0" percentHeight="-0.0" prefHeight="32.0" vgrow="ALWAYS" />
-      <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
-      <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="131.0" minHeight="0.0" percentHeight="-2.0" prefHeight="0.0" valignment="CENTER" vgrow="ALWAYS" />
     <RowConstraints maxHeight="678.0" minHeight="10.0" percentHeight="100.0" prefHeight="580.0" valignment="CENTER" />
-      <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" valignment="CENTER" />
+    <RowConstraints maxHeight="10.0" minHeight="10.0" prefHeight="10.0" valignment="CENTER" />
   </rowConstraints>
    <children>
       <MenuBar>
@@ -117,20 +117,20 @@
                   <TabPane fx:id="tpEditor" prefHeight="359.0" prefWidth="898.0" tabClosingPolicy="ALL_TABS">
                      <tabs>
                         <Tab text="United">
-      					<graphic>
-      						<ImageView fitHeight="15" fitWidth="15">
-      							<image>
-      		                        <Image url="@icon/documentIcon26.png" />
-      							</image>
-      						</ImageView>
-      					</graphic>
-                           <content>
-                              <TextArea prefHeight="200.0" prefWidth="200.0">
-                                 <font>
-                                    <Font size="16.0" />
-                                 </font>
-                              </TextArea>
-                           </content>
+	      					<graphic>
+	      						<ImageView fitHeight="15" fitWidth="15">
+	      							<image>
+	      		                        <Image url="@icon/documentIcon26.png" />
+	      							</image>
+	      						</ImageView>
+	      					</graphic>
+	                         <content>
+	                            <TextArea prefHeight="200.0" prefWidth="200.0">
+	                               <font>
+	                                  <Font size="14.0" />
+	                               </font>
+	                            </TextArea>
+	                         </content>
                         </Tab>
                      </tabs>
                   </TabPane>
@@ -165,7 +165,7 @@
                      <content>
                          <TextArea fx:id="textOutput" editable="false" prefHeight="122.0" prefWidth="892.0">
                            <font>
-                              <Font size="16.0" />
+                              <Font size="14.0" />
                            </font>
                          </TextArea>
                      </content>

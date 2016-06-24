@@ -1,16 +1,23 @@
 package application;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -28,7 +35,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.PetriNet;
-import operation.OperationX;
+import netscape.javascript.JSObject;
 
 public class Controller {
 
@@ -70,7 +77,8 @@ public class Controller {
 
 			setSourceCode(getSelectedTab(), textFull);
 		} catch (Exception e) {
-			// TODO
+			e.printStackTrace();
+			setOuputText(e.getMessage().replaceAll("\\w+(\\.|:)", ""));
 		}
 
 		tpEditor.getTabs().add(tab);
@@ -95,17 +103,54 @@ public class Controller {
 	@FXML
 	private void runFile() {
 		WebEngine engine = browser.getEngine();
-		engine.load(getSourceCode(getSelectedTab()));
+
+		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
+		engine.load(uri);
+
+		engine.documentProperty().addListener(new ChangeListener<Document>() {
+			@Override
+			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
+				PetriNet net = getPetriNet();
+				String json = getGson().toJson(net);
+
+				JSObject window = (JSObject) engine.executeScript("window");
+				window.setMember("java", new Bridge(json));
+			}
+		});
 	}
 
 	@FXML
 	private void runLexFile() {
-		PetriNet petriNet = getPetriNet();
+		WebEngine engine = browser.getEngine();
+		String uri = getClass().getResource("/javascript/index.html").toExternalForm();
+		engine.load(uri);
 
-		if (petriNet != null) {
-			String result = new OperationX().executa(petriNet);
-			setOuputText(result.toString());
-		}
+		engine.documentProperty().addListener(new ChangeListener<Document>() {
+			@Override
+			public void changed(ObservableValue<? extends Document> observable, Document oldValue, Document newValue) {
+				InputStream in = getClass().getResourceAsStream("/javascript/test.json");
+
+				BufferedInputStream bin = new BufferedInputStream(in);
+				ByteArrayOutputStream buf = new ByteArrayOutputStream();
+				String json = null;
+
+				try {
+					int res = bin.read();
+					while (res != -1) {
+						byte b = (byte) res;
+						buf.write(b);
+						res = bin.read();
+					}
+
+					json = buf.toString("UTF-8");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				JSObject window = (JSObject) engine.executeScript("window");
+				window.setMember("java", new Bridge(json));
+			}
+		});
 	}
 
 	@FXML
@@ -128,31 +173,7 @@ public class Controller {
 	}
 
 	private String readme() {
-		return "<programa> ::= { <comando> [`;´] } [<ultimocomando> [`;´]]\n" + "<bloco> ::= <programa>\n"
-				+ "<comando> ::=    <listavar> `=´ <listaexp> |\n" + "		 <chamadadefuncao> | \n"
-				+ "	 	 do <bloco> end | \n" + "	 	 while <exp> do <bloco> end | \n"
-				+ "	 	 repeat <bloco> until <exp> | \n"
-				+ "	 	 if <exp> then <bloco> [{elseif <exp> then <bloco>}] [else <bloco>] end |\n"
-				+ "	 	 for <Nome> `=´ <exp> `,´ <exp> [`,´ <exp>] do <bloco> end |\n"
-				+ "	 	 for <listadenomes> in <listaexp> do <bloco> end |\n"
-				+ "	 	 function <nome> <corpodafuncao> \n" + "<ultimocomando> ::= return [<listaexp>] | break\n"
-				+ "<listadenomes> ::= <Nome> {`,´ <Nome>}\n" + "<listaexp> ::=  <exp> {`,´<exp> } \n"
-				+ "<exp> ::=  null<exp2> | false<exp2> | true<exp2>| <string><exp2> | <numero><exp2> |\n"
-				+ "		 <funcao><exp2> | <expprefixo><exp2> | <construtortabela><exp2> |<opunaria> <exp><exp2>\n"
-				+ "<exp2> = <opbin> <exp> <exp2> \n"
-				+ "<expprefixo> ::= <var> |   <chamadadefuncao> | `(´ <exp> `)´\n"
-				+ "<listavar> ::= <var> {`,´ <var>}\n"
-				+ "<var> ::=  <nome> <var2>| <chamadadefuncao><var2> | <chamadadefuncao><var2> |`(´ exp `) <var2> | `(´ exp `)´ <var2>\n"
-				+ "<var2> ::= `[´ exp `]´ <var2> |  `.´ <Nome>  <var2> | `.´ <chamadadefuncao>\n"
-				+ "<chamadadefuncao> ::= <Nome>  `(´ <args> `)´\n"
-				+ "<args> ::=   <listaexp>  | <construtortabela> \n" + "<funcao> ::= function <corpodafuncao>\n"
-				+ "<corpodafuncao> ::= `(´ [<listadenomes>] `)´ <bloco> end\n"
-				+ "<construtortabela> ::= `{´ [listadecampos] `}´\n"
-				+ "<listadecampos> ::= <campo> {<separadordecampos> <campo>} [<separadordecampos>]\n"
-				+ "<campo> ::= `[´ <exp> `]´ `=´ <exp> | <nome> `=´ <exp> | <exp>\n"
-				+ "<separadordecampos> ::= `,´ | `;´\n"
-				+ "<opbin> ::= `+´ | `-´ | `*´ | `/´ | `^´ | `%´ | `..´ | `<´ | `<=´ | `>´ | `>=´ | `==´ | `~=´ | and | or\n"
-				+ "<opunaria> ::= `-´ | not | `#´\n" + "<string> ::= `\"´| `'´ {<digito> <letra>} `\"´| `'´ \n";
+		return "Desenvolvido por: \nArinaldo Lopes da Silva, \nVitor Augusto Correa Cortez Almeda, \nTaisa Alves Ferreira.";
 	}
 
 	@FXML
@@ -209,8 +230,7 @@ public class Controller {
 		tab.setGraphic(iv);
 
 		TextArea textArea = new TextArea();
-		// TODO style
-		textArea.setFont(Font.font("Bitstream Vera Sans Mono Bold", 12));
+		textArea.setFont(Font.font("Bitstream Vera Sans Mono Bold", 14));
 		tab.setContent(textArea);
 
 		setSelectedTab(tab);
@@ -301,6 +321,28 @@ public class Controller {
 			e.printStackTrace();
 		}
 		return petriNet;
+	}
 
+	public class Bridge {
+		private String value;
+
+		public Bridge(String value) {
+			this.value = value;
+		}
+
+		public String loadJSON() {
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			try {
+				buf.write(value.getBytes());
+				return buf.toString("UTF-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return value;
+		}
+
+		public void log(String message) {
+			System.out.println(message);
+		}
 	}
 }

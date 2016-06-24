@@ -17,144 +17,181 @@ function onLoad() {
     perpendicularLinks: true,
     model: graph
   });
-  
-  var places = createPlaces(json.places);
-  var transitions = createTransitions(json.transitions);
+
+  var places = createPlaces(json.lugares, json.marcas);
+  var transitions = createTransitions(json.transicoes);
 
   var cells = places.concat(transitions);
 
-  var links = createLinks(json.arcin, json.arcout);
-  
+  var links = createLinks(json.arcos, json.pesos);
+
   graph.resetCells(cells.concat(links));
 
   joint.layout.DirectedGraph.layout(graph, {
     rankDir: 'LR',
     edgeSep: 90
   });
-  
+
   function fireTransition(t, sec) {
-	  var inbound = graph.getConnectedLinks(t, {
-	    inbound: true
-	  });
-	  var outbound = graph.getConnectedLinks(t, {
-	    outbound: true
-	  });
+    var inbound = graph.getConnectedLinks(t, {
+      inbound: true
+    });
+    var outbound = graph.getConnectedLinks(t, {
+      outbound: true
+    });
 
-	  var placesBefore = _.map(inbound, function(link) {
-	    return graph.getCell(link.get('source').id);
-	  });
-	  var placesAfter = _.map(outbound, function(link) {
-	    return graph.getCell(link.get('target').id);
-	  });
+    var placesBefore = _.map(inbound, function (link) {
+      return [graph.getCell(link.get('source').id), link];
+    });
 
-	  var isFirable = true;
-	  _.each(placesBefore, function(p) {
-	    if (p.get('tokens') === 0) isFirable = false;
-	  });
+    var placesAfter = _.map(outbound, function (link) {
+      return graph.getCell(link.get('target').id);
+    });
 
-	  if (isFirable) {
+    var isFirable = true;
+    _.each(placesBefore, function (p) {
+      var t = p[0].get('tokens');
+      var w = p[1].get('weight');
 
-	    _.each(placesBefore, function(p) {
-	      // Let the execution finish before adjusting the value of tokens. So that we can loop over all transitions
-	      // and call fireTransition() on the original number of tokens.
-	      _.defer(function() {
-	        p.set('tokens', p.get('tokens') - 1);
-	      });
+      if (t <= 0 || w > t)
+        isFirable = false;
+    });
 
-	      var link = _.find(inbound, function(l) {
-	        return l.get('source').id === p.id;
-	      });
-	      paper.findViewByModel(link).sendToken(V('circle', {
-	        r: 5,
-	        fill: '#feb662'
-	      }).node, sec * 1000);
+    if (isFirable) {
 
-	    });
+      _.each(placesBefore, function (p) {
+        // Let the execution finish before adjusting the value of tokens. So that we can loop over all transitions
+        // and call fireTransition() on the original number of tokens.
+        var t = p[0].get('tokens');
+        var w = p[1].get('weight');
 
-	    _.each(placesAfter, function(p) {
-	      var link = _.find(outbound, function(l) {
-	        return l.get('target').id === p.id;
-	      });
-	      paper.findViewByModel(link).sendToken(V('circle', {
-	        r: 5,
-	        fill: '#feb662'
-	      }).node, sec * 1000, function() {
-	        p.set('tokens', p.get('tokens') + 1);
-	      });
+        _.defer(function () {
+          p[0].set('tokens', t - w);
+        });
 
-	    });
-	  }
-	}
+        /*
+        var link = _.find(inbound, function (l) {
+          return l.get('source').id === p[0].id;
+        });
+        */
+        var link = p[1];
 
-	function simulate(transitions) {
-	  //var transitions = [pProduce, pSend, cAccept, cConsume];
-	  _.each(transitions, function(t) {
-	    if (Math.random() < 0.7) fireTransition(t, 1);
-	  });
+        paper.findViewByModel(link).sendToken(V('circle', {
+          r: 5,
+          fill: '#feb662'
+        }).node, sec * 1000);
 
-	  return setInterval(function() {
-	    _.each(transitions, function(t) {
-	      if (Math.random() < 0.7) fireTransition(t, 1);
-	    });
-	  }, 2000);
-	}
+      });
 
-	function stopSimulation(simulationId) {
-	  clearInterval(simulationId);
-	}
+      _.each(placesAfter, function (p) {
+        var link = _.find(outbound, function (l) {
+          return l.get('target').id === p.id;
+        });
 
-	var simulationId = simulate(transitions);
+        var w = link.get('weight');
+
+        paper.findViewByModel(link).sendToken(V('circle', {
+          r: 5,
+          fill: '#feb662'
+        }).node, sec * 1000, function () {
+          p.set('tokens', p.get('tokens') + w);
+        });
+
+      });
+    }
+  }
+
+  function simulate(transitions) {
+    //var transitions = [pProduce, pSend, cAccept, cConsume];
+    _.each(transitions, function (t) {
+      if (Math.random() < 0.5) fireTransition(t, 1);
+    });
+
+    return setInterval(function () {
+      _.each(transitions, function (t) {
+        if (Math.random() < 0.5) fireTransition(t, 1);
+      });
+    }, 2000);
+  }
+
+  function stopSimulation(simulationId) {
+    clearInterval(simulationId);
+  }
+
+  var simulationId = simulate(transitions);
 }
 
-function createPlaces(places) {
+function createPlaces(places, tokens) {
   var pn = joint.shapes.pn;
-  var plcs = places.map(function(pl) {
+  var plcs = places.map(function (pl, i) {
     return new pn.Place({
-      id: ""+pl.id,
+      id: 'p' + pl.id,
       attrs: {
-        '.label': { text: pl.label, fill: '#7c68fc' },
+        '.label': { text: pl.legenda, fill: '#7c68fc' },
         '.root': { stroke: '#9586fd', 'stroke-width': 3 },
         '.tokens > circle': { fill: '#7a7e9b' }
       },
-      tokens: pl.tokens
+      tokens: tokens[i]
     });
   });
+
   return plcs;
 }
 
 function createTransitions(transitions) {
   var pn = joint.shapes.pn;
-  var trs = transitions.map(function(tr) {
+  var trs = transitions.map(function (tr) {
     return new pn.Transition({
-      id: ""+tr.id,
+      id: 't' + tr.id,
       attrs: {
-        '.label': { text: tr.label, fill: '#fe854f' },
+        '.label': { text: tr.legenda, fill: '#fe854f' },
         '.root': { fill: '#9586fd', stroke: '#9586fd' }
       }
     });
   });
+
   return trs;
 }
 
-function createLinks(ins, out) {
+function createLinks(arcos, pesos) {
   var pn = joint.shapes.pn;
-  var links = ins.concat(out);
-  var res = links.map(function(ln) {
-    console.log('creating link ['+ ln.from + ','+ ln.to +']');
+  var offset = arcos.entrada.length;
+
+  var entrada = arcos.entrada.map(function (arco, i) {
     return new pn.Link({
-      source: { id: ""+ln.from, selector: '.root' },
-      target: { id: ""+ln.to, selector: '.root' },
+      source: { id: 'p' + arco.lugar, selector: '.root' },
+      target: { id: 't' + arco.transicao, selector: '.root' },
       attrs: {
         '.connection': {
           fill: 'none',
           'stroke-linejoin': 'round',
           'stroke-width': '2',
-          'stroke': '#4b4a67'
+          stroke: '#4b4a67'
         }
-      }
+      },
+      weight: pesos[i],
+      labels: [{ position: 25, attrs: { text: { text: pesos[i] } } }]
     });
   });
-  return res;
+
+  var saida = arcos.saida.map(function (arco, i) {
+      return new pn.Link({
+        source: { id: 't' + arco.transicao, selector: '.root' },
+        target: { id: 'p' + arco.lugar, selector: '.root' },
+        attrs: {
+          '.connection': {
+            fill: 'none',
+            'stroke-linejoin': 'round',
+            'stroke-width': '2',
+            stroke: '#4b4a67'
+          }
+        },
+        weight: pesos[i + offset],
+        labels: [{ position: 25, attrs: { text: { text: pesos[i + offset] } } }]
+      });
+    });
+
+  return entrada.concat(saida);
 }
 
 window.addEventListener('load', onLoad, false);

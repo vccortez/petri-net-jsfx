@@ -1,30 +1,33 @@
 {
-  "places": [
-    { "id": 1, "label": "ready", "tokens": 1 },
-    { "id": 2, "label": "idle", "tokens": 2 },
-    { "id": 3, "label": "buffer", "tokens": 12 },
-    { "id": 4, "label": "accepted", "tokens": 1 },
-    { "id": 5, "label": "ready", "tokens": 3 }
+  "lugares": [
+    { "id": 1, "legenda": "ready" },
+    { "id": 2, "legenda": "idle" },
+    { "id": 3, "legenda": "buffer" },
+    { "id": 4, "legenda": "accepted" },
+    { "id": 5, "legenda": "ready" }
   ],
-  "transitions": [
-    { "id": 10, "label": "send" },
-    { "id": 20, "label": "produce" },
-    { "id": 30, "label": "accept" },
-    { "id": 40, "label": "consume" }
+  "marcas": [1, 2, 10, 1, 3],
+  "transicoes": [
+    { "id": 1, "legenda": "send" },
+    { "id": 2, "legenda": "produce" },
+    { "id": 3, "legenda": "accept" },
+    { "id": 4, "legenda": "consume" }
   ],
-  "arcin": [
-    { "from": 1, "to": 10 },
-    { "from": 2, "to": 20 },
-    { "from": 3, "to": 30 },
-    { "from": 4, "to": 40 },
-    { "from": 5, "to": 30 },
-    { "from": 1, "to": 10 }
-  ],
-  "arcout": [
-    { "from": 10, "to": 2 },
-    { "from": 10, "to": 3 },
-    { "from": 20, "to": 1 },
-    { "from": 30, "to": 4 },
-    { "from": 40, "to": 5 }
-  ]
+  "arcos": {
+    "entrada": [
+      { "transicao": 1, "lugar": 1 },
+      { "transicao": 2, "lugar": 2 },
+      { "transicao": 3, "lugar": 3 },
+      { "transicao": 3, "lugar": 5 },
+      { "transicao": 4, "lugar": 4 }
+    ],
+    "saida": [
+      { "transicao": 1, "lugar": 2 },
+      { "transicao": 1, "lugar": 3 },
+      { "transicao": 2, "lugar": 1 },
+      { "transicao": 3, "lugar": 4 },
+      { "transicao": 4, "lugar": 5 }
+    ]
+  },
+  "pesos": [3, 1, 1, 1, 1, 1, 2, 1, 1, 1]
 }

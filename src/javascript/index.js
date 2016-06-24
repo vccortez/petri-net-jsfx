@@ -3,7 +3,7 @@
  * @author Vitor Cortez <vitor.a.cortez@gmail.com>
  */
 function onLoad() {
-  java.log('onLoad was called');
+  // java.log('onLoad was called');
 
   var json = JSON.parse(java.loadJSON());
 

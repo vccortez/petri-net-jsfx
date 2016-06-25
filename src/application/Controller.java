@@ -34,6 +34,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.PetriNet;
+import model.PetrinetDeserializer;
+import model.PetrinetSerializer;
 import netscape.javascript.JSObject;
 
 public class Controller {
@@ -51,6 +53,9 @@ public class Controller {
 
 	private int initial = 0;
 	private HashMap<Tab, File> openFiles = new HashMap<>();
+
+	private Gson petrinetGson = new GsonBuilder().registerTypeAdapter(PetriNet.class, new PetrinetSerializer())
+			.registerTypeAdapter(PetriNet.class, new PetrinetDeserializer()).setPrettyPrinting().create();
 
 	@FXML
 	private void newFile() {
@@ -103,7 +108,7 @@ public class Controller {
 		PetriNet net = getPetriNet();
 		Bridge bridge = new Bridge();
 		if (net != null)
-			bridge.value = new Gson().toJson(net);
+			bridge.value = petrinetGson.toJson(net);
 
 		loadPage(bridge);
 	}
@@ -206,11 +211,10 @@ public class Controller {
 
 	private String getSourceCode(Tab tab) {
 		/**
-		 * FIXME:
-		 * quando todas as abas são fechadas, esse método levanta uma exceção.
-		 * por enquanto, retornar string vazia desvia o erro.
+		 * FIXME: quando todas as abas são fechadas, esse método levanta uma
+		 * exceção. por enquanto, retornar string vazia desvia o erro.
 		 */
-		if (tab == null) { 
+		if (tab == null) {
 			return "";
 		}
 		return ((TextArea) tab.getContent()).getText();
@@ -291,7 +295,7 @@ public class Controller {
 		}
 		PetriNet petriNet = null;
 		try {
-			petriNet = new Gson().fromJson(sourceCode, PetriNet.class);
+			petriNet = petrinetGson.fromJson(sourceCode, PetriNet.class);
 			if (petriNet != null && petriNet.getPlaces() == null)
 				setOuputText("Não foi possivel converter o json em uma Rede de Petri.");
 		} catch (JsonSyntaxException e) {
@@ -307,8 +311,9 @@ public class Controller {
 
 		public String loadJSON() {
 			if (value == null) {
-				Gson gson = new GsonBuilder().serializeNulls().create();
-				value = gson.toJson(new PetriNet());
+				// Gson petrinetGson = new
+				// GsonBuilder().serializeNulls().create();
+				value = petrinetGson.toJson(new PetriNet());
 			}
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();
 			try {

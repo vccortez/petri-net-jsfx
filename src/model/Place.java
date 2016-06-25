@@ -3,7 +3,7 @@ package model;
 public class Place {
 	private int id;
 	private String label;
-	private String tokens;
+	private int tokens;
 
 	public int getId() {
 		return id;
@@ -21,11 +21,11 @@ public class Place {
 		this.label = label;
 	}
 
-	public String getTokens() {
+	public int getTokens() {
 		return tokens;
 	}
 
-	public void setTokens(String tokens) {
+	public void setTokens(int tokens) {
 		this.tokens = tokens;
 	}
 

@@ -2,12 +2,15 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class Petrinet extends PetrinetObject {
 
-	List<Place> places = new ArrayList<Place>();
-	List<Transition> transitions = new ArrayList<Transition>();
-	List<Arc> arcs = new ArrayList<Arc>();
+	private List<Place> places = new ArrayList<Place>();
+	private List<Transition> transitions = new ArrayList<Transition>();
+	private List<Arc> arcs = new ArrayList<Arc>();
+	private Vector<Integer> initialMarks = new Vector<>();
+	private Vector<Integer> weights = new Vector<>();
 
 	public Petrinet(String name) {
 		super(name);
@@ -15,11 +18,11 @@ public class Petrinet extends PetrinetObject {
 
 	public void add(PetrinetObject o) {
 		if (o instanceof Arc) {
-			arcs.add((Arc) o);
+			addArc((Arc) o);
 		} else if (o instanceof Place) {
-			places.add((Place) o);
+			addPlace((Place) o);
 		} else if (o instanceof Transition) {
-			transitions.add((Transition) o);
+			addTransition((Transition) o);
 		}
 	}
 
@@ -33,34 +36,48 @@ public class Petrinet extends PetrinetObject {
 		return list;
 	}
 
-	public Transition transition(String name) {
+	public Transition addTransition(String name) {
 		Transition t = new Transition(name);
-		transitions.add(t);
+		addTransition(t);
 		return t;
 	}
 
-	public Place place(String name) {
+	private void addTransition(Transition transition) {
+		transitions.add(transition);
+	}
+
+	public Place addPlace(String name) {
 		Place p = new Place(name);
-		places.add(p);
+		addPlace(p);
 		return p;
 	}
 
-	public Place place(String name, int initial) {
+	public Place addPlace(String name, int initial) {
 		Place p = new Place(name, initial);
-		places.add(p);
+		addPlace(p);
 		return p;
 	}
 
-	public Arc arc(String name, Place p, Transition t) {
+	private void addPlace(Place place) {
+		places.add(place);
+		initialMarks.add(places.indexOf(place), place.getTokens());
+	}
+
+	public Arc addArc(String name, Place p, Transition t) {
 		Arc arc = new Arc(name, p, t);
-		arcs.add(arc);
+		addArc(arc);
 		return arc;
 	}
 
-	public Arc arc(String name, Transition t, Place p) {
+	public Arc addArc(String name, Transition t, Place p) {
 		Arc arc = new Arc(name, t, p);
-		arcs.add(arc);
+		addArc(arc);
 		return arc;
+	}
+
+	private void addArc(Arc arc) {
+		arcs.add(arc);
+		weights.add(arcs.indexOf(arc), arc.getWeight());
 	}
 
 	public List<Place> getPlaces() {
@@ -73,6 +90,49 @@ public class Petrinet extends PetrinetObject {
 
 	public List<Arc> getArcs() {
 		return arcs;
+	}
+
+	public ArrayList<Arc> getArcs(Transition t, Direction d) {
+		ArrayList<Arc> list = new ArrayList<>();
+		for (Arc arc : arcs) {
+			if (arc.getDirection() == d) {
+				if (arc.getTransition().equals(t)) {
+					list.add(arc);
+				}
+			}
+		}
+		return list;
+	}
+
+	public int[][] getIncidenceMatrix() {
+		int t = transitions.size();
+		int p = places.size();
+		int[][] matrix = new int[t][p];
+
+		for (int i = 0; i < t; ++i) {
+			ArrayList<Arc> incoming = getArcs(transitions.get(i), Direction.PLACE_TO_TRANSITION);
+			ArrayList<Arc> outgoing = getArcs(transitions.get(i), Direction.TRANSITION_TO_PLACE);
+			
+			for (int j = 0; j < p; ++j) {
+				int inc = 0;
+				
+				for (int k = 0; k < incoming.size(); ++k) {
+					if (incoming.get(k).getPlace().equals(places.get(j))) {
+						inc -= incoming.get(k).getWeight();
+					}
+				}
+				
+				for (int k = 0; k < outgoing.size(); ++k) {
+					if (outgoing.get(k).getPlace().equals(places.get(j))) {
+						inc += outgoing.get(k).getWeight();
+					}
+				}
+				
+				matrix[i][j] = inc;
+			}
+		}
+
+		return matrix;
 	}
 
 	@Override

@@ -29,7 +29,10 @@ function onLoad() {
 
   joint.layout.DirectedGraph.layout(graph, {
     rankDir: 'LR',
-    edgeSep: 90
+    nodeSep: 100,
+    edgeSep: 100,
+    marginX: 10,
+    marginY: 20
   });
 
   function fireTransition(t, sec) {

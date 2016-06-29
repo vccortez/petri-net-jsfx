@@ -1,6 +1,7 @@
 package model;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,20 +17,24 @@ public class PetrinetSerializer implements JsonSerializer<Petrinet> {
 		JsonArray lugares = new JsonArray();
 		JsonArray marcas = new JsonArray();
 
-		for (Place place : src.getPlaces()) {
+		List<Place> places = src.getPlaces();
+
+		for (Place place : places) {
 			JsonObject lugar = new JsonObject();
-			lugar.addProperty("id", place.getId());
-			lugar.addProperty("legenda", place.getLabel());
+			lugar.addProperty("id", places.indexOf(place));
+			lugar.addProperty("legenda", place.getName());
 			marcas.add(place.getTokens());
 			lugares.add(lugar);
 		}
 
 		JsonArray transicoes = new JsonArray();
 
-		for (Transition transition : src.getTransitions()) {
+		List<Transition> transitions = src.getTransitions();
+
+		for (Transition transition : transitions) {
 			JsonObject transicao = new JsonObject();
-			transicao.addProperty("id", transition.getId());
-			transicao.addProperty("legenda", transition.getLabel());
+			transicao.addProperty("id", transitions.indexOf(transition));
+			transicao.addProperty("legenda", transition.getName());
 			transicoes.add(transicao);
 		}
 
@@ -37,20 +42,21 @@ public class PetrinetSerializer implements JsonSerializer<Petrinet> {
 		JsonArray saida = new JsonArray();
 		JsonArray pesos = new JsonArray();
 
-		for (FromTo arc : src.getArcin()) {
-			JsonObject arco = new JsonObject();
-			arco.addProperty("transicao", arc.getTo());
-			arco.addProperty("lugar", arc.getFrom());
-			pesos.add(arc.getWeight());
-			entrada.add(arco);
-		}
+		List<Arc> arcs = src.getArcs();
 
-		for (FromTo arc : src.getArcout()) {
+		for (Arc arc : arcs) {
 			JsonObject arco = new JsonObject();
-			arco.addProperty("transicao", arc.getFrom());
-			arco.addProperty("lugar", arc.getTo());
-			pesos.add(arc.getWeight());
-			saida.add(arco);
+			if (arc.getDirection() == Direction.PLACE_TO_TRANSITION) {
+				arco.addProperty("transicao", transitions.indexOf(arc.getTransition()));
+				arco.addProperty("lugar", places.indexOf(arc.getPlace()));
+				pesos.add(arc.getWeight());
+				entrada.add(arco);
+			} else if (arc.getDirection() == Direction.TRANSITION_TO_PLACE) {
+				arco.addProperty("transicao", transitions.indexOf(arc.getTransition()));
+				arco.addProperty("lugar", places.indexOf(arc.getPlace()));
+				pesos.add(arc.getWeight());
+				saida.add(arco);
+			}
 		}
 
 		JsonObject arcos = new JsonObject();

@@ -1,6 +1,8 @@
 package model;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -15,71 +17,77 @@ public class PetrinetDeserializer implements JsonDeserializer<Petrinet> {
 	public Petrinet deserialize(JsonElement src, Type type, JsonDeserializationContext context)
 			throws JsonParseException {
 		JsonObject json = src.getAsJsonObject();
-		
+
 		JsonArray lugares = json.getAsJsonArray("lugares");
 		JsonArray marcas = json.getAsJsonArray("marcas");
-		Place[] places = new Place[lugares.size()];
-		
+		Vector<Place> places = new Vector<>(lugares.size());
+
 		int i = 0;
 		for (JsonElement element : lugares) {
 			JsonObject lugar = element.getAsJsonObject();
 			Place place = new Place();
-			place.setId(lugar.get("id").getAsInt());
-			place.setLabel(lugar.get("legenda").getAsString());
+
+			place.setName(lugar.get("legenda").getAsString());
 			place.setTokens(marcas.get(i).getAsInt());
-			places[i] = place;
+			places.add(i, place);
 			i++;
 		}
-		
+
 		JsonArray transicoes = json.getAsJsonArray("transicoes");
-		Transition[] transitions = new Transition[transicoes.size()];
-		
+		Vector<Transition> transitions = new Vector<>(transicoes.size());
+
 		i = 0;
 		for (JsonElement element : transicoes) {
 			JsonObject transicao = element.getAsJsonObject();
 			Transition transition = new Transition();
-			transition.setId(transicao.get("id").getAsInt());
-			transition.setLabel(transicao.get("legenda").getAsString());
-			transitions[i] = transition;
+
+			transition.setName(transicao.get("legenda").getAsString());
+			transitions.add(i, transition);
 			i++;
 		}
-		
+
 		JsonObject arcos = json.getAsJsonObject("arcos");
 		JsonArray entrada = arcos.getAsJsonArray("entrada");
 		JsonArray saida = arcos.getAsJsonArray("saida");
 		JsonArray pesos = json.getAsJsonArray("pesos");
-		FromTo[] arcin = new FromTo[entrada.size()];
-		FromTo[] arcout = new FromTo[saida.size()];
-		
+		Vector<Arc> incoming = new Vector<>(entrada.size());
+		Vector<Arc> outgoing = new Vector<>(saida.size());
+
 		i = 0;
 		for (JsonElement element : entrada) {
 			JsonObject arco = element.getAsJsonObject();
-			FromTo arc = new FromTo();
-			arc.setFrom(arco.get("lugar").getAsInt());
-			arc.setTo(arco.get("transicao").getAsInt());
+			int from = arco.get("lugar").getAsInt();
+			int to = arco.get("transicao").getAsInt();
+			Arc arc = new Arc("", places.get(from - 1), transitions.get(to - 1));
 			arc.setWeight(pesos.get(i).getAsInt());
-			arcin[i] = arc;
+			incoming.add(i, arc);
 			i++;
 		}
-		
+
 		int j = 0;
 		for (JsonElement element : saida) {
 			JsonObject arco = element.getAsJsonObject();
-			FromTo arc = new FromTo();
-			arc.setFrom(arco.get("transicao").getAsInt());
-			arc.setTo(arco.get("lugar").getAsInt());
+			int from = arco.get("transicao").getAsInt();
+			int to = arco.get("lugar").getAsInt();
+			Arc arc = new Arc("", transitions.get(from - 1), places.get(to - 1));
 			arc.setWeight(pesos.get(i).getAsInt());
-			arcout[j] = arc;
+			outgoing.add(j, arc);
 			i++;
 			j++;
 		}
-		
-		Petrinet petrinet = new Petrinet();
-		petrinet.setPlaces(places);
-		petrinet.setTransitions(transitions);
-		petrinet.setArcin(arcin);
-		petrinet.setArcout(arcout);
-		
+
+		ArrayList<PetrinetObject> objects = new ArrayList<>(
+				places.size() + transitions.size() + incoming.size() + outgoing.size());
+		objects.addAll(places);
+		objects.addAll(transitions);
+		objects.addAll(incoming);
+		objects.addAll(outgoing);
+
+		Petrinet petrinet = new Petrinet("Petrinet");
+		for (PetrinetObject object : objects) {
+			petrinet.add(object);
+		}
+
 		return petrinet;
 	}
 

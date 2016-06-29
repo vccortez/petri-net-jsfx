@@ -1,65 +1,94 @@
 package model;
 
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Petrinet {
+public class Petrinet extends PetrinetObject {
 
-	private Place[] places;
-	private Transition[] transitions;
-	private FromTo[] arcin;
-	private FromTo[] arcout;
-	private String jsonString;
+	List<Place> places = new ArrayList<Place>();
+	List<Transition> transitions = new ArrayList<Transition>();
+	List<Arc> arcs = new ArrayList<Arc>();
 
-	public Petrinet() {
+	public Petrinet(String name) {
+		super(name);
 	}
 
-	public void setJsonString(String jsonString) {
-		this.jsonString = jsonString;
-	}
-
-	public String loadJSON() {
-		// String jsonString = new Gson().toJson(this);
-		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		try {
-			byte[] utf8Json = jsonString.getBytes("UTF8");
-			buf.write(utf8Json);
-			return buf.toString("UTF-8");
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void add(PetrinetObject o) {
+		if (o instanceof Arc) {
+			arcs.add((Arc) o);
+		} else if (o instanceof Place) {
+			places.add((Place) o);
+		} else if (o instanceof Transition) {
+			transitions.add((Transition) o);
 		}
-		return null;
 	}
 
-	public FromTo[] getArcout() {
-		return arcout;
+	public List<Transition> getTransitionsAbleToFire() {
+		ArrayList<Transition> list = new ArrayList<Transition>();
+		for (Transition t : transitions) {
+			if (t.canFire()) {
+				list.add(t);
+			}
+		}
+		return list;
 	}
 
-	public void setArcout(FromTo[] arcout) {
-		this.arcout = arcout;
+	public Transition transition(String name) {
+		Transition t = new Transition(name);
+		transitions.add(t);
+		return t;
 	}
 
-	public FromTo[] getArcin() {
-		return arcin;
+	public Place place(String name) {
+		Place p = new Place(name);
+		places.add(p);
+		return p;
 	}
 
-	public void setArcin(FromTo[] arcin) {
-		this.arcin = arcin;
+	public Place place(String name, int initial) {
+		Place p = new Place(name, initial);
+		places.add(p);
+		return p;
 	}
 
-	public Transition[] getTransitions() {
-		return transitions;
+	public Arc arc(String name, Place p, Transition t) {
+		Arc arc = new Arc(name, p, t);
+		arcs.add(arc);
+		return arc;
 	}
 
-	public void setTransitions(Transition[] transitions) {
-		this.transitions = transitions;
+	public Arc arc(String name, Transition t, Place p) {
+		Arc arc = new Arc(name, t, p);
+		arcs.add(arc);
+		return arc;
 	}
 
-	public Place[] getPlaces() {
+	public List<Place> getPlaces() {
 		return places;
 	}
 
-	public void setPlaces(Place[] places) {
-		this.places = places;
+	public List<Transition> getTransitions() {
+		return transitions;
 	}
 
+	public List<Arc> getArcs() {
+		return arcs;
+	}
+
+	@Override
+	public String toString() {
+		String nl = "\n";
+		StringBuilder sb = new StringBuilder("Petrinet ");
+
+		sb.append(super.toString()).append(nl);
+		sb.append("---Transitions---").append(nl);
+		for (Transition t : transitions) {
+			sb.append(t).append(nl);
+		}
+		sb.append("---Places---").append(nl);
+		for (Place p : places) {
+			sb.append(p).append(nl);
+		}
+		return sb.toString();
+	}
 }

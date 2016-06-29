@@ -302,6 +302,7 @@ public class Controller {
 			setOuputText(e.getMessage().replaceAll("(\\w+(\\.|:)|\\$\\.null)", ""));
 			e.printStackTrace();
 		}
+		setOuputText(petriNet.toString());
 
 		return petriNet;
 	}
@@ -313,7 +314,7 @@ public class Controller {
 			if (value == null) {
 				// Gson petrinetGson = new
 				// GsonBuilder().serializeNulls().create();
-				value = petrinetGson.toJson(new Petrinet());
+				value = petrinetGson.toJson(new Petrinet("Petrinet"));
 			}
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();
 			try {

@@ -13,6 +13,29 @@ public class Petrinet extends PetrinetObject {
 		super(name);
 	}
 
+	public String getMark() {
+		List<Integer> mark = new ArrayList<>(places.size());
+		for (Place place : places) {
+			mark.add(place.getTokens());
+		}
+		return mark.toString();
+	}
+
+	public void setMark(String mark) {
+		String[] marks = mark.replaceAll("\\[|\\]| ", "").split(",");
+		for (int i = 0; i < marks.length; i++) {
+			places.get(i).setTokens(Integer.valueOf(marks[i]));
+		}
+	}
+
+	public List<Transition> hasTransitionsAbleToFire(String mark) {
+		String mark0 = getMark();
+		setMark(mark);
+		List<Transition> list = getTransitionsAbleToFire();
+		setMark(mark0);
+		return list;
+	}
+
 	public void add(PetrinetObject o) {
 		if (o instanceof Arc) {
 			arcs.add((Arc) o);

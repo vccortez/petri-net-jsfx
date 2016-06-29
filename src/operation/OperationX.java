@@ -1,10 +1,10 @@
 package operation;
 
-import model.PetriNet;
+import model.Petrinet;
 
 public class OperationX {
 
-	public String executa(PetriNet pn) {
+	public String executa(Petrinet pn) {
 		return pn.toString();
 	}
 

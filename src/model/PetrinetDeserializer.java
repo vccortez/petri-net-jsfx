@@ -9,10 +9,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class PetrinetDeserializer implements JsonDeserializer<PetriNet> {
+public class PetrinetDeserializer implements JsonDeserializer<Petrinet> {
 
 	@Override
-	public PetriNet deserialize(JsonElement src, Type type, JsonDeserializationContext context)
+	public Petrinet deserialize(JsonElement src, Type type, JsonDeserializationContext context)
 			throws JsonParseException {
 		JsonObject json = src.getAsJsonObject();
 		
@@ -74,7 +74,7 @@ public class PetrinetDeserializer implements JsonDeserializer<PetriNet> {
 			j++;
 		}
 		
-		PetriNet petrinet = new PetriNet();
+		Petrinet petrinet = new Petrinet();
 		petrinet.setPlaces(places);
 		petrinet.setTransitions(transitions);
 		petrinet.setArcin(arcin);

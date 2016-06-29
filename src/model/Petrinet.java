@@ -2,7 +2,7 @@ package model;
 
 import java.io.ByteArrayOutputStream;
 
-public class PetriNet {
+public class Petrinet {
 
 	private Place[] places;
 	private Transition[] transitions;
@@ -10,7 +10,7 @@ public class PetriNet {
 	private FromTo[] arcout;
 	private String jsonString;
 
-	public PetriNet() {
+	public Petrinet() {
 	}
 
 	public void setJsonString(String jsonString) {

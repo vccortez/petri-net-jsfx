@@ -8,10 +8,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-public class PetrinetSerializer implements JsonSerializer<PetriNet> {
+public class PetrinetSerializer implements JsonSerializer<Petrinet> {
 
 	@Override
-	public JsonElement serialize(PetriNet src, Type type, JsonSerializationContext context) {
+	public JsonElement serialize(Petrinet src, Type type, JsonSerializationContext context) {
 
 		JsonArray lugares = new JsonArray();
 		JsonArray marcas = new JsonArray();

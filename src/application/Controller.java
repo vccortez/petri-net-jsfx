@@ -122,18 +122,14 @@ public class Controller {
 	private void showHelp() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About");
-		alert.setHeaderText("Gramatica");
-		alert.setContentText("By Jonhnny Werlley, Taisa Alves.");
+		alert.setHeaderText("Developed by: \nArinaldo Lopes da Silva, \nVitor Augusto Correa Cortez Almeda, \nTaisa Alves Ferreira.");
 		alert.setResizable(true);
-		TextArea textArea = new TextArea(readme());
-		textArea.setPrefSize(600, 600);
-		textArea.setEditable(false);
-		alert.setGraphic(textArea);
+		Image image = new Image(getClass().getResourceAsStream("icon/rocketIcon26.png"));
+		ImageView iv = new ImageView(image);
+		iv.setFitHeight(45);
+		iv.setFitWidth(45);
+		alert.setGraphic(iv);
 		alert.show();
-	}
-
-	private String readme() {
-		return "Desenvolvido por: \nArinaldo Lopes da Silva, \nVitor Augusto Correa Cortez Almeda, \nTaisa Alves Ferreira.";
 	}
 
 	@FXML

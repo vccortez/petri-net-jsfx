@@ -17,18 +17,24 @@ public class TestOperationCoverTree {
 			.registerTypeAdapter(Petrinet.class, new PetrinetDeserializer()).setPrettyPrinting().create();
 
 	public static void main(String[] args) {
-		// Petrinet petrinet = getPetrinet();
-		// testPetrinet(petrinet);
+		System.out.println("*********REDE 0");
+		Petrinet petrinet = getPetrinet();
+		testPetrinet(petrinet);
 
 		System.out.println("*********REDE 2");
 		Petrinet petrinet2 = getPetrinet2();
 		testPetrinet(petrinet2);
+		
+		System.out.println("*********REDE 1");
+		Petrinet petrinet1 = getPetrinet1();
+		testPetrinet(petrinet1);
 	}
 
 	private static void testPetrinet(Petrinet petrinet) {
 		OperationCoverTree op = new OperationCoverTree(petrinet);
 		System.out.println(op.printTree());
 		System.out.println(op.getStatusBlocked());
+		System.out.println(op.getStatusUnlimited());
 	}
 
 	private static Petrinet getPetrinet() {

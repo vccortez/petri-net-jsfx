@@ -118,6 +118,18 @@
                   <Tooltip text="Verificar Estados Bloqueantes" />
                </tooltip>
             </Button>
+            <Button mnemonicParsing="false" onAction="#verifyStatusUnlimited" prefHeight="23.0" prefWidth="23.0">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icon/unlimitedIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Verificar se rede é limitada" />
+               </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <TextField fx:id="tfFind" onKeyReleased="#findText" promptText="Find" />
         </items>

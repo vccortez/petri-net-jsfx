@@ -127,6 +127,12 @@ public class Controller {
 	}
 
 	@FXML
+	private void verifyStatusUnlimited() {
+		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		setOuputText(operation.getStatusUnlimited());
+	}
+
+	@FXML
 	private void focusFind() {
 		tfFind.requestFocus();
 	}

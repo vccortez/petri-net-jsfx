@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.w3c.dom.Document;
 
@@ -24,6 +25,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -130,6 +132,20 @@ public class Controller {
 	private void verifyStatusUnlimited() {
 		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
 		setOuputText(operation.getStatusUnlimited());
+	}
+
+	@FXML
+	private void verifyConservation() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Conservação");
+		dialog.setHeaderText("Informe o vetor gama");
+		dialog.setContentText("Vetor: ");
+
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+			setOuputText(operation.getConservation(result.get()));
+		}
 	}
 
 	@FXML

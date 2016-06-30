@@ -130,15 +130,27 @@
                   <Tooltip text="Verificar se rede é limitada" />
                </tooltip>
             </Button>
+            <Button mnemonicParsing="false" onAction="#verifyConservation" prefHeight="23.0" prefWidth="23.0">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icon/equalsIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Verificar se há conservação" />
+               </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <TextField fx:id="tfFind" onKeyReleased="#findText" promptText="Find" />
         </items>
       </ToolBar>
       <SplitPane dividerPositions="0.6322033898305085" orientation="VERTICAL" prefHeight="513.0" prefWidth="771.0" GridPane.rowIndex="3">
         <items>
-            <SplitPane dividerPositions="0.5" prefHeight="400.0" prefWidth="898.0">
+            <SplitPane dividerPositions="0.5" prefHeight="500.0" prefWidth="900">
               <items>
-                  <TabPane fx:id="tpEditor" prefHeight="359.0" prefWidth="898.0" tabClosingPolicy="ALL_TABS">
+                  <TabPane fx:id="tpEditor" prefHeight="500" prefWidth="900" tabClosingPolicy="ALL_TABS">
                      <tabs>
                         <Tab text="United">
 	      					<graphic>
@@ -158,11 +170,11 @@
                         </Tab>
                      </tabs>
                   </TabPane>
-                  <TabPane prefHeight="77.0" prefWidth="774.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane prefHeight="500" prefWidth="900" tabClosingPolicy="UNAVAILABLE">
                      <tabs>
                         <Tab closable="false" text="Rede de Petri">
                            <content>
-                              <WebView fx:id="browser" prefHeight="122.0" prefWidth="892.0" />
+                              <WebView fx:id="browser" prefHeight="500" prefWidth="900" />
                            </content>
                            <graphic>
                               <ImageView fitHeight="15" fitWidth="15">

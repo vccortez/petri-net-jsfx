@@ -15,6 +15,7 @@ public class OperationCoverTree {
 	private List<Node> tree = new ArrayList<>();
 	private String raiz;
 	private Set<String> blockeds = new HashSet<>();
+	private Set<String> marks = new HashSet<>();
 	private Petrinet pn;
 
 	public OperationCoverTree(Petrinet pn) {
@@ -100,16 +101,50 @@ public class OperationCoverTree {
 		}
 
 		if (!blockeds.isEmpty()) {
-			for (Node node : tree)
+			for (Node node : tree) {
+				marks.add(node.getChild());
+				marks.add(node.getFather());
 				if (!node.getFather().contains("w") && blockeds.contains(node.getChild()))
 					node.setChild(node.getChild().replaceAll("(\\d+)w", "$1"));
-
+			}
 			Set<String> newBlockeds = new HashSet<>();
 			for (String blo : blockeds)
 				newBlockeds.add(blo.replaceAll("(\\d+)w", "$1"));
 			blockeds = newBlockeds;
 		}
 
+	}
+
+	public String getConservation(String gamaString) {
+		List<Integer> gamma = toInteger(gamaString);
+
+		int quantity = multiply(gamma, toInteger(raiz));
+		boolean constant = true;
+
+		for (String mark : marks) {
+			if (multiply(gamma, toInteger(mark)) != quantity) {
+				constant = false;
+				break;
+			}
+		}
+		if (constant)
+			return "Existe conservacao na rede de petri.";
+		else
+			return "Nao existe conservacao na rede de petri.";
+	}
+
+	private List<Integer> toInteger(String mark) {
+		String[] split = mark.replaceAll("\\[|\\]| |w", "").split(",");
+		List<Integer> result = new ArrayList<>();
+		Arrays.asList(split).forEach(t -> result.add(Integer.valueOf(t)));
+		return result;
+	}
+
+	private int multiply(List<Integer> a, List<Integer> b) {
+		int result = 0;
+		for (int i = 0; i < a.size(); ++i)
+			result += a.get(i) * b.get(i);
+		return result;
 	}
 
 	public String printTree() {
@@ -131,17 +166,15 @@ public class OperationCoverTree {
 
 	public String getStatusUnlimited() {
 		Set<String> unlimiteds = new HashSet<>();
-		for (Node node : tree) {
-			if (node.getChild().contains("w"))
-				unlimiteds.add(node.getChild());
-			if (node.getFather().contains("w"))
-				unlimiteds.add(node.getFather());
-		}
+		for (String mark : marks)
+			if (mark.contains("w"))
+				unlimiteds.add(mark);
+
 		if (unlimiteds.isEmpty())
-			return "Esta rede de petri é limitada.\n";
+			return "Esta rede de petri e limitada.\n";
 		else {
 			StringBuilder r = new StringBuilder(
-					"Esta rede de petri é não limitada, pois os estados a seguir são não limitados: \n");
+					"Esta rede de petri nao e limitada, pois os estados a seguir nao sao limitados: \n");
 			unlimiteds.forEach(t -> r.append(t).append("\n"));
 			return r.toString().replaceAll("\\d+(w)", "$1");
 		}

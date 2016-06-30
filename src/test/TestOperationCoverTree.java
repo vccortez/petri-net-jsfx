@@ -1,20 +1,65 @@
 package test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import model.Arc;
 import model.Petrinet;
+import model.PetrinetDeserializer;
+import model.PetrinetSerializer;
 import model.Place;
 import model.Transition;
 import operation.OperationCoverTree;
 
 public class TestOperationCoverTree {
 
+	private static Gson petrinetGson = new GsonBuilder().registerTypeAdapter(Petrinet.class, new PetrinetSerializer())
+			.registerTypeAdapter(Petrinet.class, new PetrinetDeserializer()).setPrettyPrinting().create();
+
 	public static void main(String[] args) {
-		Petrinet petrinet = getPetrinet();
-		OperationCoverTree op = new OperationCoverTree();
-		System.out.println(op.executa(petrinet));
+		// Petrinet petrinet = getPetrinet();
+		// testPetrinet(petrinet);
+
+		System.out.println("*********REDE 2");
+		Petrinet petrinet2 = getPetrinet2();
+		testPetrinet(petrinet2);
+	}
+
+	private static void testPetrinet(Petrinet petrinet) {
+		OperationCoverTree op = new OperationCoverTree(petrinet);
+		System.out.println(op.printTree());
+		System.out.println(op.getStatusBlocked());
 	}
 
 	private static Petrinet getPetrinet() {
+		Petrinet petrinet = new Petrinet("test");
+
+		Place p0 = new Place("p0", 1);
+		petrinet.add(p0);
+		Place p1 = new Place("p1", 0);
+		petrinet.add(p1);
+		Place p2 = new Place("p2", 0);
+		petrinet.add(p2);
+
+		Transition t0 = new Transition("t0");
+		petrinet.add(t0);
+		Transition t1 = new Transition("t1");
+		petrinet.add(t1);
+		Transition t2 = new Transition("t2");
+		petrinet.add(t2);
+
+		petrinet.add(new Arc("1", p1, t1));
+		petrinet.add(new Arc("2", p1, t2));
+		petrinet.add(new Arc("3", t1, p0));
+		petrinet.add(new Arc("4", t2, p0));
+		petrinet.add(new Arc("5", p0, t0));
+		petrinet.add(new Arc("6", t0, p1));
+		petrinet.add(new Arc("7", t0, p2));
+		petrinet.add(new Arc("8", p2, t1));
+		return petrinet;
+	}
+
+	private static Petrinet getPetrinet2() {
 		Petrinet petrinet = new Petrinet("test");
 
 		Place p1 = new Place("p1", 1);
@@ -45,7 +90,7 @@ public class TestOperationCoverTree {
 		return petrinet;
 	}
 
-	private static Petrinet getPetrinet2() {
+	private static Petrinet getPetrinet1() {
 		Petrinet petrinet = new Petrinet("test");
 
 		Place p1 = new Place("p1", 1);

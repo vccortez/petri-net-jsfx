@@ -37,6 +37,7 @@ import model.Petrinet;
 import model.PetrinetDeserializer;
 import model.PetrinetSerializer;
 import netscape.javascript.JSObject;
+import operation.OperationCoverTree;
 
 public class Controller {
 
@@ -114,6 +115,18 @@ public class Controller {
 	}
 
 	@FXML
+	private void visualizeTreeCover() {
+		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		setOuputText(operation.printTree());
+	}
+
+	@FXML
+	private void verifyStatusBlocked() {
+		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		setOuputText(operation.getStatusBlocked());
+	}
+
+	@FXML
 	private void focusFind() {
 		tfFind.requestFocus();
 	}
@@ -122,7 +135,8 @@ public class Controller {
 	private void showHelp() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About");
-		alert.setHeaderText("Developed by: \nArinaldo Lopes da Silva, \nVitor Augusto Correa Cortez Almeda, \nTaisa Alves Ferreira.");
+		alert.setHeaderText(
+				"Developed by: \nArinaldo Lopes da Silva, \nVitor Augusto Correa Cortez Almeda, \nTaisa Alves Ferreira.");
 		alert.setResizable(true);
 		Image image = new Image(getClass().getResourceAsStream("icon/rocketIcon26.png"));
 		ImageView iv = new ImageView(image);

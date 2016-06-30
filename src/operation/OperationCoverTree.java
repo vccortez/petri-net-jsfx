@@ -6,51 +6,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import model.Node;
 import model.Petrinet;
 import model.Transition;
 
 public class OperationCoverTree {
 
-	class Node {
-		String father;
-		String child;
-		boolean raiz;
-		String transition;
+	private List<Node> tree = new ArrayList<>();
+	private String raiz;
+	private Set<String> blockeds = new HashSet<>();
+	private Petrinet pn;
 
-		public Node(String father, String child, String transition) {
-			super();
-			this.father = father;
-			this.child = child;
-			raiz = false;
-			this.transition = transition;
-		}
-
-		@Override
-		public String toString() {
-			return father + "---" + transition + "---> " + child + ", raiz=" + raiz + "\n";
-		}
-
+	public OperationCoverTree(Petrinet pn) {
+		this.pn = pn;
+		executa();
 	}
-
-	List<Node> tree = new ArrayList<>();
-	String raiz;
-	Set<String> blockeds = new HashSet<>();
 
 	private void addNode(String father, String child, String t) {
 		Node node = new Node(father, child, t);
 		if (father.equals(raiz))
-			node.raiz = true;
+			node.setRaiz(true);
 		tree.add(node);
 	}
 
 	private Set<String> getFathers(Set<String> fathers, String child) {
 		for (Node node : tree) {
-			if (node.child.equals(child)) {
-				fathers.add(node.father);
-				if (node.raiz)
+			if (node.getChild().equals(child)) {
+				fathers.add(node.getFather());
+				if (node.isRaiz())
 					fathers.add(child);
 				else {
-					child = node.father;
+					child = node.getFather();
 					getFathers(fathers, child);
 				}
 				break;
@@ -60,11 +46,12 @@ public class OperationCoverTree {
 		return fathers;
 	}
 
-	public String executa(Petrinet pn) {
+	public void executa() {
 		List<String> markNews = new ArrayList<>();
 		raiz = pn.getMark();
 		markNews.add(raiz);
 		int size = markNews.size();
+
 		for (int z = 0; z < size; z++) {
 			String mark = markNews.get(z);
 
@@ -91,9 +78,9 @@ public class OperationCoverTree {
 								if (m2Line[i].contains("w")) {
 									hasW[i] = fathers.size();
 									mLine[i] = m2Line[i];
-								} else if (mLine[i].contains("w"))
+								} else if (mLine[i].contains("w")) {
 									hasW[i] = fathers.size();
-								else if (Integer.valueOf(mLine[i]) >= Integer.valueOf(m2Line[i]))
+								} else if (Integer.valueOf(mLine[i]) >= Integer.valueOf(m2Line[i]))
 									hasW[i] += 1;
 								else
 									hasW[i] -= 1;
@@ -103,8 +90,13 @@ public class OperationCoverTree {
 
 					String[] markSplit = mark.replaceAll("\\[|\\]| ", "").split(",");
 					for (int i = 0; i < hasW.length; i++) {
-						if (markSplit[i].contains("w"))
+						if (markSplit[i].contains("w")) {
+							// Integer mInt =
+							// Integer.valueOf(mLine[i].replaceAll("(\\d+)w",
+							// "$1")) + 1;
+							// mLine[i] = mInt + "w";
 							mLine[i] = markSplit[i];
+						}
 						if (!mLine[i].contains("w") && hasW[i] == fathers.size() && Integer.valueOf(markSplit[i]) > 0
 								&& Integer.valueOf(markSplit[i]) >= Integer.valueOf(mLine[i]))
 							mLine[i] = mLine[i] + "w";
@@ -117,12 +109,36 @@ public class OperationCoverTree {
 					++size;
 				}
 			}
-
 		}
+
+		if (!blockeds.isEmpty()) {
+			for (Node node : tree)
+				if (!node.getFather().contains("w") && blockeds.contains(node.getChild()))
+					node.setChild(node.getChild().replaceAll("(\\d+)w", "$1"));
+
+			Set<String> newBlockeds = new HashSet<>();
+			for (String blo : blockeds)
+				newBlockeds.add(blo.replaceAll("(\\d+)w", "$1"));
+			blockeds = newBlockeds;
+		}
+
+	}
+
+	public String printTree() {
 		StringBuilder r = new StringBuilder("\n");
 		tree.forEach(t -> r.append(t));
 		r.append("\n");
 		return r.toString().replaceAll("\\d+(w)", "$1");
+	}
+
+	public String getStatusBlocked() {
+		if (blockeds.isEmpty())
+			return "Nao existem estados bloqueantes na rede de petri. ";
+		else {
+			StringBuilder r = new StringBuilder("Os estados bloqueantes da rede sao: \n");
+			blockeds.forEach(t -> r.append(t + "\n"));
+			return r.toString();
+		}
 	}
 
 }

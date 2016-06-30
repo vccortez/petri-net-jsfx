@@ -94,6 +94,30 @@
                   <Tooltip text="Visualizar Rede de Petri" />
                </tooltip>
             </Button>
+            <Button mnemonicParsing="false" onAction="#visualizeTreeCover" prefHeight="23.0" prefWidth="23.0">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icon/treeIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Visualizar Arvore de Cobertura" />
+               </tooltip>
+            </Button>
+             <Button mnemonicParsing="false" onAction="#verifyStatusBlocked" prefHeight="23.0" prefWidth="23.0">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icon/unlockIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Verificar Estados Bloqueantes" />
+               </tooltip>
+            </Button>
             <Pane HBox.hgrow="ALWAYS" />
             <TextField fx:id="tfFind" onKeyReleased="#findText" promptText="Find" />
         </items>

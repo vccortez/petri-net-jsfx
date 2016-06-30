@@ -1,0 +1,19 @@
+{
+  "lugares": [
+    { "id": 1, "legenda": "p1" },
+    { "id": 2, "legenda": "p2" }
+  ],
+  "marcas": [0, 0],
+  "transicoes": [
+    { "id": 1, "legenda": "t1" }
+  ],
+  "arcos": {
+    "entrada": [
+      { "transicao": 1, "lugar": 1 }
+    ],
+    "saida": [
+      { "transicao": 1, "lugar": 2 }
+    ]
+  },
+  "pesos": [2, 1]
+}

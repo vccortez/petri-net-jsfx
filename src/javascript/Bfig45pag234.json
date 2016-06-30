@@ -1,0 +1,26 @@
+{
+  "lugares": [
+    { "id": 1, "legenda": "Q" },
+    { "id": 2, "legenda": "I" },
+    { "id": 3, "legenda": "B" }
+  ],
+  "marcas": [0, 1, 0],
+  "transicoes": [
+    { "id": 1, "legenda": "a" },
+    { "id": 2, "legenda": "s" },
+    { "id": 3, "legenda": "c" }
+  ],
+  "arcos": {
+    "entrada": [
+      { "transicao": 2, "lugar": 1 },
+      { "transicao": 2, "lugar": 2 },
+      { "transicao": 3, "lugar": 3 }
+    ],
+    "saida": [
+      { "transicao": 1, "lugar": 1 },
+      { "transicao": 2, "lugar": 3 },
+      { "transicao": 3, "lugar": 2 }
+    ]
+  },
+  "pesos": [1, 1, 1, 1, 1, 1]
+}

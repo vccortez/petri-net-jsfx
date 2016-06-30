@@ -1,8 +1,8 @@
 package operation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +27,7 @@ public class OperationCoverTree {
 
 		@Override
 		public String toString() {
-			return father + "---" + transition + "---> " + child + ", raiz=" + raiz;
+			return father + "---" + transition + "---> " + child + ", raiz=" + raiz + "\n";
 		}
 
 	}
@@ -43,11 +43,13 @@ public class OperationCoverTree {
 		tree.add(node);
 	}
 
-	private List<String> getFathers(List<String> fathers, String child) {
+	private Set<String> getFathers(Set<String> fathers, String child) {
 		for (Node node : tree) {
 			if (node.child.equals(child)) {
 				fathers.add(node.father);
-				if (!node.raiz) {
+				if (node.raiz)
+					fathers.add(child);
+				else {
 					child = node.father;
 					getFathers(fathers, child);
 				}
@@ -62,43 +64,65 @@ public class OperationCoverTree {
 		List<String> markNews = new ArrayList<>();
 		raiz = pn.getMark();
 		markNews.add(raiz);
-		for (Iterator<String> iterator = markNews.iterator(); iterator.hasNext();) {
-			String mark = iterator.next();
+		int size = markNews.size();
+		for (int z = 0; z < size; z++) {
+			String mark = markNews.get(z);
 
-			if (!mark.equals(raiz)) {
-				if (markNews.contains(mark))
-					continue;
-				if (pn.getTransitionsAbleToFire().isEmpty()) {
-					blockeds.add(mark);
-					continue;
-				}
+			List<Transition> toFire = pn.getTransitionsAbleToFire(mark);
+			if (toFire.isEmpty()) {
+				blockeds.add(mark);
+				continue;
 			}
 
-			List<Transition> toFire = pn.getTransitionsAbleToFire();
 			for (Transition transition : toFire) {
 				pn.setMark(mark);
 				transition.fire();
-
 				String markLine = pn.getMark();
 
-				String[] mLine = markLine.replaceAll("\\]|\\]| ", "").split(",");
-				List<String> fathers = getFathers(new ArrayList<>(), markLine);
-				for (String mark2Line : fathers) {
-					String[] m2Line = mark2Line.replaceAll("\\]|\\]| ", "").split(",");
-					for (int i = 0; i < m2Line.length; i++) {
-						if (m2Line[i].matches("w") || Integer.valueOf(mLine[i]) > Integer.valueOf(m2Line[i]))
-							mLine[i] = "w";
+				String[] mLine = markLine.replaceAll("\\[|\\]| ", "").split(",");
+				Set<String> fathers = getFathers(new HashSet<>(), mark);
+				// fathers.add(mark);
+				if (!fathers.isEmpty()) {
+					int[] hasW = new int[mLine.length];
+					for (String mark2Line : fathers) {
+						if (!mLine.equals(mark2Line)) {
+							String[] m2Line = mark2Line.replaceAll("\\[|\\]| ", "").split(",");
+							for (int i = 0; i < m2Line.length; i++) {
+								if (m2Line[i].contains("w")) {
+									hasW[i] = fathers.size();
+									mLine[i] = m2Line[i];
+								} else if (mLine[i].contains("w"))
+									hasW[i] = fathers.size();
+								else if (Integer.valueOf(mLine[i]) >= Integer.valueOf(m2Line[i]))
+									hasW[i] += 1;
+								else
+									hasW[i] -= 1;
+							}
+						}
+					}
+
+					String[] markSplit = mark.replaceAll("\\[|\\]| ", "").split(",");
+					for (int i = 0; i < hasW.length; i++) {
+						if (markSplit[i].contains("w"))
+							mLine[i] = markSplit[i];
+						if (!mLine[i].contains("w") && hasW[i] == fathers.size() && Integer.valueOf(markSplit[i]) > 0
+								&& Integer.valueOf(markSplit[i]) >= Integer.valueOf(mLine[i]))
+							mLine[i] = mLine[i] + "w";
 					}
 				}
-
+				markLine = Arrays.toString(mLine);
 				addNode(mark, markLine, transition.getName());
-				markNews.add(markLine);
+				if (!markNews.contains(markLine)) {
+					markNews.add(markLine);
+					++size;
+				}
 			}
+
 		}
 		StringBuilder r = new StringBuilder("\n");
-		tree.forEach(t -> r.append(tree.toString() + "\n"));
+		tree.forEach(t -> r.append(t));
 		r.append("\n");
-		return r.toString();
+		return r.toString().replaceAll("\\d+(w)", "$1");
 	}
 
 }

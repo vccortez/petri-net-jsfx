@@ -22,13 +22,13 @@ public class Petrinet extends PetrinetObject {
 	}
 
 	public void setMark(String mark) {
-		String[] marks = mark.replaceAll("\\[|\\]| ", "").split(",");
+		String[] marks = mark.replaceAll("\\[|\\]|w| ", "").split(",");
 		for (int i = 0; i < marks.length; i++) {
 			places.get(i).setTokens(Integer.valueOf(marks[i]));
 		}
 	}
 
-	public List<Transition> hasTransitionsAbleToFire(String mark) {
+	public List<Transition> getTransitionsAbleToFire(String mark) {
 		String mark0 = getMark();
 		setMark(mark);
 		List<Transition> list = getTransitionsAbleToFire();

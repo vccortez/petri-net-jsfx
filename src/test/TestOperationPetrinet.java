@@ -11,23 +11,28 @@ import model.Place;
 import model.Transition;
 import operation.OperationPetrinet;
 
-public class TestOperationCoverTree {
+public class TestOperationPetrinet {
 
 	private static Gson petrinetGson = new GsonBuilder().registerTypeAdapter(Petrinet.class, new PetrinetSerializer())
 			.registerTypeAdapter(Petrinet.class, new PetrinetDeserializer()).setPrettyPrinting().create();
 
 	public static void main(String[] args) {
-		System.out.println("*********REDE 0");
-		Petrinet petrinet = getPetrinet();
-		testPetrinet(petrinet);
+		String json = "{ \"lugares\": [ { \"id\": 1, \"legenda\": \"p1\" }, { \"id\": 2, \"legenda\": \"p2\" } ], \"marcas\": [2, 0], \"transicoes\": [ { \"id\": 1, \"legenda\": \"t1\" } ], \"arcos\": { \"entrada\": [  { \"transicao\": 1, \"lugar\": 1 } ], \"saida\": [  { \"transicao\": 1, \"lugar\": 2 } ] }, \"pesos\": [2, 1]}";
+		Petrinet pn = petrinetGson.fromJson(json, Petrinet.class);
+		OperationPetrinet op = new OperationPetrinet(pn);
+		System.out.println(op.isReachable("0,1"));
+		// System.out.println("*********REDE 0");
+		// Petrinet petrinet = getPetrinet();
+		// testPetrinet(petrinet);
+		//
+		// System.out.println("*********REDE 2");
+		// Petrinet petrinet2 = getPetrinet2();
+		// testPetrinet(petrinet2);
+		//
+		// System.out.println("*********REDE 1");
+		// Petrinet petrinet1 = getPetrinet1();
+		// testPetrinet(petrinet1);
 
-		System.out.println("*********REDE 2");
-		Petrinet petrinet2 = getPetrinet2();
-		testPetrinet(petrinet2);
-		
-		System.out.println("*********REDE 1");
-		Petrinet petrinet1 = getPetrinet1();
-		testPetrinet(petrinet1);
 	}
 
 	private static void testPetrinet(Petrinet petrinet) {

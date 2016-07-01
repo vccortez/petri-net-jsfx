@@ -10,7 +10,7 @@ import model.Node;
 import model.Petrinet;
 import model.Transition;
 
-public class OperationCoverTree {
+public class OperationPetrinet {
 
 	private List<Node> tree = new ArrayList<>();
 	private String raiz;
@@ -18,7 +18,7 @@ public class OperationCoverTree {
 	private Set<String> marks = new HashSet<>();
 	private Petrinet pn;
 
-	public OperationCoverTree(Petrinet pn) {
+	public OperationPetrinet(Petrinet pn) {
 		this.pn = pn;
 		executa();
 	}
@@ -60,13 +60,13 @@ public class OperationCoverTree {
 				transition.fire();
 				String markLine = pn.getMark();
 
-				String[] mLine = markLine.replaceAll("\\[|\\]| ", "").split(",");
+				String[] mLine = toArray(markLine);
 				Set<String> fathers = getFathers(new HashSet<>(), mark);
 				if (!fathers.isEmpty()) {
 					int[] hasW = new int[mLine.length];
 					for (String mark2Line : fathers) {
 						if (!mLine.equals(mark2Line)) {
-							String[] m2Line = mark2Line.replaceAll("\\[|\\]| ", "").split(",");
+							String[] m2Line = toArray(mark2Line);
 							for (int i = 0; i < m2Line.length; i++) {
 								if (m2Line[i].contains("w")) {
 									hasW[i] = fathers.size();
@@ -81,7 +81,7 @@ public class OperationCoverTree {
 						}
 					}
 
-					String[] markSplit = mark.replaceAll("\\[|\\]| ", "").split(",");
+					String[] markSplit = toArray(mark);
 					for (int i = 0; i < hasW.length; i++) {
 						if (markSplit[i].contains("w"))
 							mLine[i] = markSplit[i];
@@ -115,6 +115,31 @@ public class OperationCoverTree {
 
 	}
 
+	public String isReachable(String mark) {
+		if (mark.equals(raiz))
+			return "Estado esta igual ao estado inicial.";
+		if (marks.contains(mark))
+			return String.format("O estado %s é alcancavel a partir do estado inicial %s", mark, raiz);
+		else
+			for (String m : marks) {
+				if (m.contains("w")) {
+					boolean equals = true;
+					String[] markArr = toArray(mark);
+					String[] mArr = toArray(m);
+					for (int i = 0; i < mArr.length; i++) {
+						if (mArr[i].contains("w"))
+							equals &= true;
+						else
+							equals &= markArr[i].equals(mArr[i]);
+					}
+					if (equals)
+						return String.format("O estado %s é alcancavel a partir do estado inicial %s", mark, raiz);
+				}
+			}
+		return "O estado nao é alcançavel.";
+
+	}
+
 	public String getConservation(String gamaString) {
 		List<Integer> gamma = toInteger(gamaString);
 
@@ -131,20 +156,6 @@ public class OperationCoverTree {
 			return "Existe conservacao na rede de petri.";
 		else
 			return "Nao existe conservacao na rede de petri.";
-	}
-
-	private List<Integer> toInteger(String mark) {
-		String[] split = mark.replaceAll("\\[|\\]| |w", "").split(",");
-		List<Integer> result = new ArrayList<>();
-		Arrays.asList(split).forEach(t -> result.add(Integer.valueOf(t)));
-		return result;
-	}
-
-	private int multiply(List<Integer> a, List<Integer> b) {
-		int result = 0;
-		for (int i = 0; i < a.size(); ++i)
-			result += a.get(i) * b.get(i);
-		return result;
 	}
 
 	public String printTree() {
@@ -178,6 +189,24 @@ public class OperationCoverTree {
 			unlimiteds.forEach(t -> r.append(t).append("\n"));
 			return r.toString().replaceAll("\\d+(w)", "$1");
 		}
+	}
+
+	private List<Integer> toInteger(String mark) {
+		String[] split = toArray(mark);
+		List<Integer> result = new ArrayList<>();
+		Arrays.asList(split).forEach(t -> result.add(Integer.valueOf(t.replaceAll("w", ""))));
+		return result;
+	}
+
+	private String[] toArray(String mark) {
+		return mark.replaceAll("\\[|\\]| ", "").split(",");
+	}
+
+	private int multiply(List<Integer> a, List<Integer> b) {
+		int result = 0;
+		for (int i = 0; i < a.size(); ++i)
+			result += a.get(i) * b.get(i);
+		return result;
 	}
 
 	private void addNode(String father, String child, String t) {

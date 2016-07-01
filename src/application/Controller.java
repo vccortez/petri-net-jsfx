@@ -39,7 +39,7 @@ import model.Petrinet;
 import model.PetrinetDeserializer;
 import model.PetrinetSerializer;
 import netscape.javascript.JSObject;
-import operation.OperationCoverTree;
+import operation.OperationPetrinet;
 
 public class Controller {
 
@@ -118,19 +118,19 @@ public class Controller {
 
 	@FXML
 	private void visualizeTreeCover() {
-		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		OperationPetrinet operation = new OperationPetrinet(getPetriNet());
 		setOuputText(operation.printTree());
 	}
 
 	@FXML
 	private void verifyStatusBlocked() {
-		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		OperationPetrinet operation = new OperationPetrinet(getPetriNet());
 		setOuputText(operation.getStatusBlocked());
 	}
 
 	@FXML
 	private void verifyStatusUnlimited() {
-		OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+		OperationPetrinet operation = new OperationPetrinet(getPetriNet());
 		setOuputText(operation.getStatusUnlimited());
 	}
 
@@ -143,8 +143,22 @@ public class Controller {
 
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			OperationCoverTree operation = new OperationCoverTree(getPetriNet());
+			OperationPetrinet operation = new OperationPetrinet(getPetriNet());
 			setOuputText(operation.getConservation(result.get()));
+		}
+	}
+
+	@FXML
+	private void verifyReachable() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Alcançabilidade");
+		dialog.setHeaderText("Informe um estado");
+		dialog.setContentText("Estado: ");
+
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			OperationPetrinet operation = new OperationPetrinet(getPetriNet());
+			setOuputText(operation.isReachable(result.get()));
 		}
 	}
 
@@ -210,7 +224,6 @@ public class Controller {
 			visualizeNetPetri();
 		}
 		// TODO adicionar outros metodos
-		// runFile();
 	}
 
 	private Tab newTab(String name) {
@@ -242,10 +255,6 @@ public class Controller {
 	}
 
 	private String getSourceCode(Tab tab) {
-		/**
-		 * FIXME: quando todas as abas são fechadas, esse método levanta uma
-		 * exceção. por enquanto, retornar string vazia desvia o erro.
-		 */
 		if (tab == null) {
 			return "";
 		}
@@ -262,7 +271,6 @@ public class Controller {
 	}
 
 	private File openChooseFile() {
-		// TODO return fileChooser.showOpenMultipleDialog(new Stage());
 		FileChooser fileChooser = dialogChooseFile("Open File");
 		return fileChooser.showOpenDialog(new Stage());
 	}
@@ -278,8 +286,6 @@ public class Controller {
 	}
 
 	private File persistedFile(Tab tab) {
-		// TODO HasMap.get()
-		// return openFiles.get(tab);
 		for (Map.Entry<Tab, File> entry : openFiles.entrySet()) {
 			if (entry.getKey().equals(tab)) {
 				return entry.getValue();
@@ -293,14 +299,10 @@ public class Controller {
 	}
 
 	private void closeTab(Tab tab) {
-		// TODO remove openFiles
-		// openFiles.remove(tab);
 		tpEditor.getTabs().remove(tab);
 	}
 
 	private void setOuputText(String text) {
-		// Tab tabOuput = tpOutput.getSelectionModel().getSelectedItem();
-		// setSourceCode(tabOuput, text);
 		textOutput.setText(text);
 	}
 

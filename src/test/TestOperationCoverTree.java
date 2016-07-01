@@ -9,7 +9,7 @@ import model.PetrinetDeserializer;
 import model.PetrinetSerializer;
 import model.Place;
 import model.Transition;
-import operation.OperationCoverTree;
+import operation.OperationPetrinet;
 
 public class TestOperationCoverTree {
 
@@ -31,7 +31,7 @@ public class TestOperationCoverTree {
 	}
 
 	private static void testPetrinet(Petrinet petrinet) {
-		OperationCoverTree op = new OperationCoverTree(petrinet);
+		OperationPetrinet op = new OperationPetrinet(petrinet);
 		System.out.println(op.printTree());
 		System.out.println(op.getStatusBlocked());
 		System.out.println(op.getStatusUnlimited());

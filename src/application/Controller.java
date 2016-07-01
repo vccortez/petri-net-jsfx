@@ -68,26 +68,27 @@ public class Controller {
 
 	@FXML
 	private void openFile() throws IOException {
-		File file = openChooseFile();
-		if (file == null)
+		List<File> files = openChooseFile();
+		if (files == null || files.isEmpty())
 			return;
 
-		Tab tab = newTab(file.getName());
-		try {
-			String textFull = new String("");
-			List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-			openFiles.put(tab, file);
+		for (File file : files) {
+			Tab tab = newTab(file.getName());
+			try {
+				String textFull = new String("");
+				List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
+				openFiles.put(tab, file);
 
-			for (String line : lines)
-				textFull += line + "\n";
+				for (String line : lines)
+					textFull += line + "\n";
 
-			setSourceCode(getSelectedTab(), textFull);
-		} catch (Exception e) {
-			e.printStackTrace();
-			setOuputText(e.getMessage().replaceAll("\\w+(\\.|:)", ""));
+				setSourceCode(getSelectedTab(), textFull);
+			} catch (Exception e) {
+				e.printStackTrace();
+				setOuputText(e.getMessage().replaceAll("\\w+(\\.|:)", ""));
+			}
+			tpEditor.getTabs().add(tab);
 		}
-
-		tpEditor.getTabs().add(tab);
 	}
 
 	@FXML
@@ -224,6 +225,7 @@ public class Controller {
 			visualizeNetPetri();
 		}
 		// TODO adicionar outros metodos
+		// runFile();
 	}
 
 	private Tab newTab(String name) {
@@ -270,9 +272,9 @@ public class Controller {
 		return fileChooser.showSaveDialog(new Stage());
 	}
 
-	private File openChooseFile() {
+	private List<File> openChooseFile() {
 		FileChooser fileChooser = dialogChooseFile("Open File");
-		return fileChooser.showOpenDialog(new Stage());
+		return fileChooser.showOpenMultipleDialog(new Stage());
 	}
 
 	private FileChooser dialogChooseFile(String title) {

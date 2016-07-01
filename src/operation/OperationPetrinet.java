@@ -47,33 +47,33 @@ public class OperationPetrinet {
 		int size = markNews.size();
 
 		for (int z = 0; z < size; z++) {
-			String mark = markNews.get(z);
+			String mFather = markNews.get(z);
 
-			List<Transition> toFire = pn.getTransitionsAbleToFire(mark);
+			List<Transition> toFire = pn.getTransitionsAbleToFire(mFather);
 			if (toFire.isEmpty()) {
-				blockeds.add(mark);
+				blockeds.add(mFather);
 				continue;
 			}
 
 			for (Transition transition : toFire) {
-				pn.setMark(mark);
+				pn.setMark(mFather);
 				transition.fire();
 				String markLine = pn.getMark();
 
-				String[] mLine = toArray(markLine);
-				Set<String> fathers = getFathers(new HashSet<>(), mark);
+				String[] mChild = toArray(markLine);
+				Set<String> fathers = getFathers(new HashSet<>(), mFather);
 				if (!fathers.isEmpty()) {
-					int[] hasW = new int[mLine.length];
+					int[] hasW = new int[mChild.length];
 					for (String mark2Line : fathers) {
-						if (!mLine.equals(mark2Line)) {
+						if (!mChild.equals(mark2Line)) {
 							String[] m2Line = toArray(mark2Line);
 							for (int i = 0; i < m2Line.length; i++) {
 								if (m2Line[i].contains("w")) {
 									hasW[i] = fathers.size();
-									mLine[i] = m2Line[i];
-								} else if (mLine[i].contains("w")) {
+									mChild[i] = m2Line[i];
+								} else if (mChild[i].contains("w")) {
 									hasW[i] = fathers.size();
-								} else if (Integer.valueOf(mLine[i]) >= Integer.valueOf(m2Line[i]))
+								} else if (Integer.valueOf(mChild[i]) >= Integer.valueOf(m2Line[i]))
 									hasW[i] += 1;
 								else
 									hasW[i] -= 1;
@@ -81,18 +81,21 @@ public class OperationPetrinet {
 						}
 					}
 
-					String[] markSplit = toArray(mark);
+					String[] mFatherSplit = toArray(mFather);
 					for (int i = 0; i < hasW.length; i++) {
-						if (markSplit[i].contains("w"))
-							mLine[i] = markSplit[i];
-						if (!mLine[i].contains("w") && hasW[i] == fathers.size() && Integer.valueOf(markSplit[i]) > 0
-								&& Integer.valueOf(markSplit[i]) >= Integer.valueOf(mLine[i]))
-							mLine[i] = mLine[i] + "w";
+						if (mFatherSplit[i].contains("w"))
+							mChild[i] = mFatherSplit[i];
+						if (!mChild[i].contains("w") && hasW[i] == fathers.size()
+								&& Integer.valueOf(mFatherSplit[i]) > 0
+						// && Integer.valueOf(mFatherSplit[i]) >=
+						// Integer.valueOf(mChild[i])
+						)
+							mChild[i] = mChild[i] + "w";
 					}
 				}
 
-				markLine = Arrays.toString(mLine);
-				addNode(mark, markLine, transition.getName());
+				markLine = Arrays.toString(mChild);
+				addNode(mFather, markLine, transition.getName());
 				if (!markNews.contains(markLine)) {
 					markNews.add(markLine);
 					++size;
@@ -111,7 +114,11 @@ public class OperationPetrinet {
 			for (String blo : blockeds)
 				newBlockeds.add(blo.replaceAll("(\\d+)w", "$1"));
 			blockeds = newBlockeds;
-		}
+		} else
+			for (Node node : tree) {
+				marks.add(node.getChild());
+				marks.add(node.getFather());
+			}
 
 	}
 

@@ -282,7 +282,7 @@ public class Controller {
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
 		fileChooser.getExtensionFilters().add(extFilter);
 		fileChooser.setSelectedExtensionFilter(extFilter);
-		fileChooser.setInitialFileName(getSelectedTab().getText() + ".json");
+		fileChooser.setInitialFileName("javascript/");
 		fileChooser.setTitle(title);
 		return fileChooser;
 	}

@@ -117,23 +117,28 @@ public class OperationPetrinet {
 
 	public String isReachable(String mark) {
 		mark = String.format("[%s]", mark);
-		if (mark.equals(raiz))
-			return "Estado esta igual ao estado inicial.";
+		if (compareMark(mark, raiz))
+			return "O estado é igual ao estado inicial.";
 		for (String m : marks) {
-			boolean equals = true;
-			String[] markArr = toArray(mark);
-			String[] mArr = toArray(m);
-			for (int i = 0; i < mArr.length; i++) {
-				if (mArr[i].contains("w"))
-					equals &= true;
-				else
-					equals &= markArr[i].equals(mArr[i]);
-			}
+			boolean equals = compareMark(mark, m);
 			if (equals)
 				return String.format("O estado %s é alcancavel a partir do estado inicial %s", mark, raiz);
 		}
 		return "O estado nao é alcançavel.";
 
+	}
+
+	private boolean compareMark(String m1, String m2) {
+		boolean equals = true;
+		String[] m1Arr = toArray(m1);
+		String[] m2Arr = toArray(m2);
+		for (int i = 0; i < m2Arr.length; i++) {
+			if (m2Arr[i].contains("w"))
+				equals &= true;
+			else
+				equals &= m1Arr[i].equals(m2Arr[i]);
+		}
+		return equals;
 	}
 
 	public String getConservation(String gamaString) {
